@@ -1,1 +1,54 @@
-fasdfasd
+services:
+  unifi-network-application:
+    image: lscr.io/linuxserver/unifi-network-application:latest
+    container_name: unifi-network-application
+    environment:
+      - PUID=1000
+      - PGID=1000
+      - TZ=Etc/UTC
+      - MONGO_USER=UNIFI
+      - MONGO_PASS=FUFefVE#U@27pEJUM&JX
+      - MONGO_HOST=unifi-mongo-db
+      - MONGO_PORT=27017
+      - MONGO_DBNAME=UNIFINETWORK
+      - MEM_LIMIT=1024 #optional
+      - MEM_STARTUP=1024 #optional
+      - MONGO_TLS= #optional
+      - MONGO_AUTHSOURCE= #optional
+    volumes:
+      - unificonfig:/config
+    ports:
+      - 8443:8443
+      - 3478:3478/udp
+      - 10001:10001/udp
+      - 8080:8080
+      - 1900:1900/udp #optional
+      - 8843:8843 #optional
+      - 8880:8880 #optional
+      - 6789:6789 #optional
+      - 5514:5514/udp #optional
+    network_mode: bridge
+    restart: unless-stopped
+#    networks:
+#      - backandfrontend
+
+  unifi-mongo-db:
+    image: docker.io/mongo:4.4
+    container_name: unifi-mongo-db
+    volumes:
+      - unifidb:/data/db
+      - /root/init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js:ro
+    network_mode: bridge
+#    networks:
+#      - backandfrontend
+    restart: unless-stopped
+
+  
+volumes:
+  unificonfig:
+  unifidb:
+
+#networks:
+#  backandfrontend:
+#    external:
+#      name: bridge
